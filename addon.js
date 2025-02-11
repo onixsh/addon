@@ -54,17 +54,40 @@ try {
 }
 
 // 🚀 Função para carregar a lista M3U
+const fs = require("fs");
+const path = require("path");
+
 async function getM3UData() {
     try {
-        console.log("🔄 Baixando lista M3U...");
-        const response = await axios.get(M3U_URL, { responseType: "text" });
+        console.log("🔄 Baixando a lista M3U...");
 
-        if (!response.data || response.data.length < 10) {
-            console.error("❌ Erro: A lista M3U retornou vazia ou inválida!");
-            return [];
-        }
+        // Criando um caminho temporário para salvar o arquivo M3U
+        const tempFilePath = path.join(__dirname, "tv_channels.m3u");
 
-        const lines = response.data.split("\n");
+        // Baixando o arquivo M3U e salvando localmente
+        const response = await axios({
+            method: "GET",
+            url: M3U_URL,
+            responseType: "stream",
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                "Referer": IPTV_DNS
+            }
+        });
+
+        const writer = fs.createWriteStream(tempFilePath);
+        response.data.pipe(writer);
+
+        await new Promise((resolve, reject) => {
+            writer.on("finish", resolve);
+            writer.on("error", reject);
+        });
+
+        console.log("✅ Arquivo M3U baixado com sucesso!");
+
+        // Lendo o arquivo salvo
+        const m3uData = fs.readFileSync(tempFilePath, "utf-8");
+        const lines = m3uData.split("\n");
 
         let movies = [];
         let currentTitle = "";
@@ -91,7 +114,7 @@ async function getM3UData() {
 
         return movies;
     } catch (error) {
-        console.error("❌ Erro ao carregar M3U:", error);
+        console.error("❌ Erro ao carregar M3U:", error.message);
         return [];
     }
 }
