@@ -43,8 +43,15 @@ const manifest = {
     ]
 };
 
-// Criar o Addon
-const builder = new addonBuilder(manifest);
+// Criar o Addon corretamente
+let builder;
+try {
+    builder = new addonBuilder(manifest);
+    console.log("✅ addonBuilder inicializado corretamente!");
+} catch (err) {
+    console.error("❌ ERRO: Falha ao criar o addonBuilder!", err);
+    process.exit(1);
+}
 
 // 🚀 Função para carregar a lista M3U
 async function getM3UData() {
@@ -112,23 +119,27 @@ builder.defineStreamHandler(async ({ type, id }) => {
 
 // 🚀 Criando o servidor Express
 const app = express();
-const addonInterface = builder.getInterface();
 
-// Verificação se o addon foi inicializado corretamente
-if (!addonInterface || typeof addonInterface !== "object" || !addonInterface.router) {
-    console.error("❌ Erro crítico: addonInterface não foi inicializado corretamente.");
-    console.error("📢 Verifique se o stremio-addon-sdk está instalado corretamente.");
+let addonInterface;
+try {
+    addonInterface = builder.getInterface();
+    console.log("✅ addonInterface inicializado com sucesso!");
+} catch (err) {
+    console.error("❌ ERRO: addonInterface não foi inicializado corretamente!", err);
     process.exit(1);
 }
-
-console.log("✅ addonInterface inicializado com sucesso!");
 
 app.get("/manifest.json", (req, res) => {
     res.json(manifest);
 });
 
 // ✅ 🚀 Configuração correta do Middleware do Stremio
-app.use("/", addonInterface.router);
+if (addonInterface && addonInterface.router) {
+    app.use("/", addonInterface.router);
+} else {
+    console.error("❌ ERRO: O router do addonInterface não foi carregado corretamente.");
+    process.exit(1);
+}
 
 // ✅ 🚀 Mantendo o servidor ativo
 setInterval(() => {
