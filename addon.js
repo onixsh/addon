@@ -134,9 +134,41 @@ try {
 if (!addonInterface || !addonInterface.router) {
     console.error("❌ ERRO CRÍTICO: O router do addonInterface não foi carregado corretamente.");
     console.error("📢 Tentando solução alternativa...");
-    
-    // Tentativa de carregar manualmente o middleware
-    app.get("/", (req, res) => res.send("Stremio Addon ativo"));
+
+    // Tentativa de carregar manualmente as rotas
+    app.get("/manifest.json", (req, res) => {
+        res.json(manifest);
+    });
+
+    app.get("/catalog/:type/:id.json", async (req, res) => {
+        console.log(`📡 Requisição de catálogo manual: ${req.params.type}, ID: ${req.params.id}`);
+        const movies = await getM3UData();
+        res.json({ metas: movies });
+    });
+
+    app.get("/meta/:type/:id.json", (req, res) => {
+        res.json({
+            meta: {
+                id: req.params.id,
+                type: "movie",
+                name: "Filme IPTV",
+                poster: "https://via.placeholder.com/150",
+                description: "Filme transmitido via IPTV"
+            }
+        });
+    });
+
+    app.get("/stream/:type/:id.json", (req, res) => {
+        res.json({
+            streams: [
+                {
+                    title: "🎬 IPTV Stream",
+                    url: decodeURIComponent(req.params.id.replace("custom_", ""))
+                }
+            ]
+        });
+    });
+
 } else {
     console.log("✅ Router do addonInterface carregado com sucesso!");
     app.use("/", addonInterface.router);
