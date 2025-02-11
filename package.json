@@ -4,7 +4,7 @@
   "description": "Addon de IPTV para Stremio",
   "main": "addon.js",
   "scripts": {
-    "start": "node addon.js"
+    "start": "npm install --force && node addon.js"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -14,6 +14,6 @@
   "engines": {
     "node": ">=16"
   },
-  "author": "bla",
+  "author": "Seue",
   "license": "MIT"
 }
