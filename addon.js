@@ -3,9 +3,9 @@ const axios = require("axios");
 const { addonBuilder } = require("stremio-addon-sdk");
 
 const PORT = process.env.PORT || 8080;
-const IPTV_DNS = process.env.IPTV_DNS || "http://equipentmult.com";
-const IPTV_USER = process.env.IPTV_USER || "706475379";
-const IPTV_PASS = process.env.IPTV_PASS || "Y741g4229D";
+const IPTV_DNS = "http://pfsv.io";
+const IPTV_USER = "ldalton2";
+const IPTV_PASS = "1qaz2wsx";
 
 const M3U_URL = `${IPTV_DNS}/get.php?username=${IPTV_USER}&password=${IPTV_PASS}&type=m3u_plus&output=mpegts`;
 
