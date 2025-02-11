@@ -114,10 +114,14 @@ builder.defineStreamHandler(async ({ type, id }) => {
 const app = express();
 const addonInterface = builder.getInterface();
 
+// Verificação se o addon foi inicializado corretamente
 if (!addonInterface || typeof addonInterface !== "object" || !addonInterface.router) {
     console.error("❌ Erro crítico: addonInterface não foi inicializado corretamente.");
+    console.error("📢 Verifique se o stremio-addon-sdk está instalado corretamente.");
     process.exit(1);
 }
+
+console.log("✅ addonInterface inicializado com sucesso!");
 
 app.get("/manifest.json", (req, res) => {
     res.json(manifest);
