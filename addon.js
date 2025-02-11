@@ -11,6 +11,15 @@ const M3U_URL = `${IPTV_DNS}/get.php?username=${IPTV_USER}&password=${IPTV_PASS}
 
 console.log(`✅ Usando URL M3U: ${M3U_URL}`);
 
+// 🚀 Teste para garantir que o stremio-addon-sdk está instalado corretamente
+try {
+    require.resolve("stremio-addon-sdk");
+    console.log("✅ stremio-addon-sdk está instalado corretamente!");
+} catch (e) {
+    console.error("❌ ERRO: stremio-addon-sdk NÃO está instalado corretamente!", e);
+    process.exit(1);
+}
+
 // Criando o Manifesto do Addon
 const manifest = {
     id: "iptv.stremio.addon",
@@ -106,7 +115,7 @@ const app = express();
 const addonInterface = builder.getInterface();
 
 if (!addonInterface || typeof addonInterface !== "object" || !addonInterface.router) {
-    console.error("❌ Erro crítico: addonInterface não foi inicializado corretamente. Verifique a instalação do stremio-addon-sdk.");
+    console.error("❌ Erro crítico: addonInterface não foi inicializado corretamente.");
     process.exit(1);
 }
 
