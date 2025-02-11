@@ -58,6 +58,12 @@ async function getM3UData() {
     try {
         console.log("🔄 Baixando lista M3U...");
         const response = await axios.get(M3U_URL, { responseType: "text" });
+
+        if (!response.data || response.data.length < 10) {
+            console.error("❌ Erro: A lista M3U retornou vazia ou inválida!");
+            return [];
+        }
+
         const lines = response.data.split("\n");
 
         let movies = [];
@@ -77,7 +83,12 @@ async function getM3UData() {
             }
         }
 
-        console.log(`✅ Encontrados ${movies.length} filmes na lista.`);
+        if (movies.length === 0) {
+            console.error("❌ Nenhum filme encontrado na lista M3U!");
+        } else {
+            console.log(`✅ ${movies.length} filmes foram carregados da M3U.`);
+        }
+
         return movies;
     } catch (error) {
         console.error("❌ Erro ao carregar M3U:", error);
