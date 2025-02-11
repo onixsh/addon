@@ -120,6 +120,7 @@ builder.defineStreamHandler(async ({ type, id }) => {
 // 🚀 Criando o servidor Express
 const app = express();
 
+// Tentar criar a interface do addon corretamente
 let addonInterface;
 try {
     addonInterface = builder.getInterface();
@@ -129,17 +130,15 @@ try {
     process.exit(1);
 }
 
-app.get("/manifest.json", (req, res) => {
-    res.json(manifest);
-});
-
-// ✅ 🚀 Configuração correta do Middleware do Stremio
-if (addonInterface && addonInterface.router) {
-    app.use("/", addonInterface.router);
-} else {
-    console.error("❌ ERRO: O router do addonInterface não foi carregado corretamente.");
+// Garantindo que o `router` foi carregado corretamente
+if (!addonInterface || !addonInterface.router) {
+    console.error("❌ ERRO CRÍTICO: O router do addonInterface não foi carregado corretamente.");
     process.exit(1);
 }
+
+console.log("✅ Router do addonInterface carregado com sucesso!");
+
+app.use("/", addonInterface.router);
 
 // ✅ 🚀 Mantendo o servidor ativo
 setInterval(() => {
